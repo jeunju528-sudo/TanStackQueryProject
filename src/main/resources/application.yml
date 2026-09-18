@@ -1,10 +1,8 @@
-#port => default : 8080 => 
-#spring => 데이터베이스 (datasource)
 spring:
   datasource:
-    url: jdbc:oracle:thin:@localhost:1521:XE
-    username: hr
-    password: happy
+    url: ${LOCAL_DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: oracle.jdbc.driver.OracleDriver  
   thymeleaf:
     cache: false

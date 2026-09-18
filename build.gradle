@@ -26,6 +26,8 @@ dependencies {
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:4.0.1'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:4.0.1'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    /* 헬스 체크, 메트릭 모니터링, 환경 정보 조회 등 */
+    implementation 'org.springframework.boot:spring-boot-starter-actuator:4.1.1'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
