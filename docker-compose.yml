@@ -6,8 +6,12 @@ services:
     image: react-app:latest
     restart: always
 
+
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      LOCAL_DB_URL: ${LOCAL_DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
 
     expose:
       - "8080"
