@@ -139,7 +139,7 @@ pipeline {
 	
 	                        echo "===== .env 생성 ====="
 	                        echo "SPRING_PROFILES_ACTIVE=prod" > ${APP_DIR}/.env
-	                        echo "DB_URL=${DB_URL}" >> ${APP_DIR}/.env
+	                        echo "LOCAL_DB_URL=${DB_URL}" >> ${APP_DIR}/.env
 	                        echo "DB_USERNAME=${DB_USERNAME}" >> ${APP_DIR}/.env
 	                        echo "DB_PASSWORD=${DB_PASSWORD}" >> ${APP_DIR}/.env
 	
