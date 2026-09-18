@@ -3,7 +3,6 @@ pipeline {
     agent any
 
     environment {
-
         // Docker Hub 이미지
         IMAGE_NAME = "jeunju528/react-app:latest"
 
@@ -19,7 +18,8 @@ pipeline {
         stage('Git Checkout') {
 
             steps {
-
+				/* Git 저장소를 workspace 루트로 클론 */
+				/* 따로 지정 안하면 /var/lib/jenkins/workspace/<Job이름>/ 젠킨스 워크스페이스로 클론 됨 */
                 checkout scm
             }
         }
@@ -34,6 +34,10 @@ pipeline {
 
                 sh '''
                     echo "===== Gradle Build ====="
+                    
+                    pwd
+                    
+				    ls -al gradlew
 
                     chmod +x gradlew
 
