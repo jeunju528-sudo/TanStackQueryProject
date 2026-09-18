@@ -195,7 +195,7 @@ pipeline {
 
                     docker compose ps
 
-                    echo "===== Nginx Reload====="
+                    echo "===== Nginx Reload ====="
 
                     docker exec nginx nginx -s reload
 
