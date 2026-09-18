@@ -3,46 +3,72 @@ pipeline {
     agent any
 
     environment {
+
         // Docker Hub 이미지
         IMAGE_NAME = "jeunju528/react-app:latest"
 
-        // 서버 배포 디렉터리
+        // 배포 서버 디렉터리
         APP_DIR = "/home/sist/app"
     }
 
     stages {
 
-        // =========================================
+        // =====================================================
         // 1. Git Checkout
-        // =========================================
+        // =====================================================
         stage('Git Checkout') {
 
             steps {
-				/* Git 저장소를 workspace 루트로 클론 */
-				/* 따로 지정 안하면 /var/lib/jenkins/workspace/<Job이름>/ 젠킨스 워크스페이스로 클론 됨 */
+
+                echo "===== Git Checkout ====="
+
                 checkout scm
             }
         }
+   
+         stage('Copy Deploy Files') {
 
-        // =========================================
+            steps {
+
+                sh '''
+                    echo "======================================"
+                    echo " Docker Compose / Nginx 파일 복사"
+                    echo "======================================"
+
+                    mkdir -p ${APP_DIR}
+
+                    cp docker-compose.yml ${APP_DIR}/docker-compose.yml
+
+                    cp nginx.conf ${APP_DIR}/nginx.conf
+
+                    echo "======================================"
+                    echo " 배포 파일 확인"
+                    echo "======================================"
+
+                    ls -al ${APP_DIR}
+                '''
+            }
+        }
+
+        // =====================================================
         // 2. Gradle Build
-        // =========================================
+        // =====================================================
         stage('Gradle Build') {
 
             steps {
 
                 sh '''
-                    echo "===== Gradle Build ====="
-                    
-                    pwd
-                    
-				    ls -al gradlew
+                    echo "======================================"
+                    echo " Gradle Build"
+                    echo "======================================"
 
                     chmod +x gradlew
 
                     ./gradlew clean build -x test
 
-                    echo "===== JAR 확인 ====="
+                    echo "======================================"
+                    echo " JAR 파일 확인"
+                    echo "======================================"
 
                     ls -al build/libs
                 '''
@@ -50,20 +76,24 @@ pipeline {
         }
 
 
-        // =========================================
+        // =====================================================
         // 3. Docker Build
-        // =========================================
+        // =====================================================
         stage('Docker Build') {
 
             steps {
 
                 sh '''
-                    echo "===== Docker Build ====="
+                    echo "======================================"
+                    echo " Docker Build"
+                    echo "======================================"
 
                     docker build \
                         -t ${IMAGE_NAME} .
 
-                    echo "===== Docker Image 확인 ====="
+                    echo "======================================"
+                    echo " Docker Image 확인"
+                    echo "======================================"
 
                     docker images | grep react-app
                 '''
@@ -71,9 +101,9 @@ pipeline {
         }
 
 
-        // =========================================
+        // =====================================================
         // 4. Docker Hub Push
-        // =========================================
+        // =====================================================
         stage('Docker Hub Push') {
 
             steps {
@@ -89,17 +119,23 @@ pipeline {
                 ]) {
 
                     sh '''
-                        echo "===== Docker Hub Login ====="
+                        echo "======================================"
+                        echo " Docker Hub Login"
+                        echo "======================================"
 
                         echo "$DOCKER_PASSWORD" | docker login \
                             -u "$DOCKER_USERNAME" \
                             --password-stdin
 
-                        echo "===== Docker Hub Push ====="
+                        echo "======================================"
+                        echo " Docker Hub Push"
+                        echo "======================================"
 
                         docker push ${IMAGE_NAME}
 
-                        echo "===== Docker Hub Logout ====="
+                        echo "======================================"
+                        echo " Docker Hub Logout"
+                        echo "======================================"
 
                         docker logout
                     '''
@@ -108,9 +144,9 @@ pipeline {
         }
 
 
-        // =========================================
-        // 5. Create .env
-        // =========================================
+        // =====================================================
+        // 5. .env 생성
+        // =====================================================
         stage('Create .env') {
 
             steps {
@@ -133,96 +169,122 @@ pipeline {
                     )
 
                 ]) {
-					sh '''
-	                        echo "===== 배포 디렉터리 생성 ====="
-	                        mkdir -p ${APP_DIR}
-	
-	                        echo "===== .env 생성 ====="
-	                        echo "SPRING_PROFILES_ACTIVE=prod" > ${APP_DIR}/.env
-	                        echo "LOCAL_DB_URL=${DB_URL}" >> ${APP_DIR}/.env
-	                        echo "DB_USERNAME=${DB_USERNAME}" >> ${APP_DIR}/.env
-	                        echo "DB_PASSWORD=${DB_PASSWORD}" >> ${APP_DIR}/.env
-	
-	                        chmod 600 ${APP_DIR}/.env
-	                        echo "===== .env 생성 완료 ====="
-                    	'''
+
+                    sh '''
+                        echo "======================================"
+                        echo " .env 생성"
+                        echo "======================================"
+
+                        cat > ${APP_DIR}/.env <<EOF
+						SPRING_PROFILES_ACTIVE=prod
+						DB_URL=${DB_URL}
+						DB_USERNAME=${DB_USERNAME}
+						DB_PASSWORD=${DB_PASSWORD}
+						EOF
+
+                        chmod 644 ${APP_DIR}/.env
+
+                        echo ".env 생성 완료"
+                    '''
                 }
             }
         }
 
-
-        // =========================================
-        // 6. Rolling Deploy
-        // =========================================
+        // =====================================================
+        // 6. Docker Compose 배포
+        // =====================================================
         stage('Rolling Deploy') {
 
             steps {
 
                 sh '''
-                
-                	echo "===== docker-compose.yml 파일 복사 ====="
-                    cp docker-compose.yml ${APP_DIR}/
-                    
-                    echo "===== etc/nginx/default.conf 파일 복사 ====="
-                    mkdir -p ${APP_DIR}/nginx
-                    cp /etc/nginx/default.conf ${APP_DIR}/nginx/default.conf
+                    echo "======================================"
+                    echo " 배포 디렉터리"
+                    echo "======================================"
 
-                    echo "===== 배포 디렉터리로 이동 ====="
                     cd ${APP_DIR}
 
-                    echo "===== 현재 위치 및 파일 확인 ====="
+                    echo "현재 위치:"
                     pwd
-                    ls -al
-                    ls -al nginx/
 
-                    echo "===== Docker Image Pull ====="
+                    echo "======================================"
+                    echo " 파일 확인"
+                    echo "======================================"
+
+                    ls -al
+
+                    echo "======================================"
+                    echo " Docker Compose 설정 확인"
+                    echo "======================================"
+
+                    docker compose config
+
+                    echo "======================================"
+                    echo " Docker Image Pull"
+                    echo "======================================"
 
                     docker pull ${IMAGE_NAME}
 
-                    echo "===== Docker Compose 시작 ====="
+                    echo "======================================"
+                    echo " Docker Compose 시작"
+                    echo "======================================"
 
                     docker compose up -d --scale app=2
 
-                    echo "===== 컨테이너 확인 ====="
+                    echo "======================================"
+                    echo " 컨테이너 확인"
+                    echo "======================================"
 
                     docker compose ps
 
-                    echo "===== Health Check 대기 ====="
+                    echo "======================================"
+                    echo " Health Check 대기"
+                    echo "======================================"
 
                     sleep 30
 
-                    echo "===== Health Check 결과 ====="
+                    echo "======================================"
+                    echo " Health Check 결과"
+                    echo "======================================"
 
                     docker compose ps
 
-                    echo "===== Nginx Reload ====="
+                    echo "======================================"
+                    echo " Nginx Reload"
+                    echo "======================================"
 
                     docker exec nginx nginx -s reload
 
-                    echo "===== 배포 완료 ====="
+                    echo "======================================"
+                    echo " 배포 완료"
+                    echo "======================================"
                 '''
             }
         }
     }
 
 
-    // =========================================
-    // 결과
-    // =========================================
+    // =========================================================
+    // Pipeline 결과
+    // =========================================================
     post {
 
         success {
 
-            echo '======================================'
-            echo ' Rolling deployment completed successfully.'
-            echo '======================================'
+            echo '''
+========================================
+ Jenkins 배포 성공
+========================================
+'''
         }
 
         failure {
 
-            echo '======================================'
-            echo ' Rolling deployment failed.'
-            echo '======================================'
+            echo '''
+========================================
+ Jenkins 배포 실패
+========================================
+'''
         }
     }
 }

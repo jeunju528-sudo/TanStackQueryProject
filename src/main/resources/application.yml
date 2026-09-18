@@ -1,6 +1,8 @@
+#port => default : 8080 => 
+#spring => 데이터베이스 (datasource)
 spring:
   datasource:
-    url: ${LOCAL_DB_URL}
+    url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: oracle.jdbc.driver.OracleDriver  
@@ -14,4 +16,3 @@ spring:
 mybatis:
   type-aliases-package: com.sist.web.vo
   mapper-locations: mybatis/mapper/*.xml
-
