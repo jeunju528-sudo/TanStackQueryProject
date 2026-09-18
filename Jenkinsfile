@@ -133,22 +133,19 @@ pipeline {
                     )
 
                 ]) {
-
-                    sh '''
-                    	echo "===== 배포 디렉터리 생성 ====="
-                        mkdir -p ${APP_DIR}
-                        
-                        echo "===== .env 생성 ====="
-                        cat > ${APP_DIR}/.env <<EOF
-						SPRING_PROFILES_ACTIVE=prod
-						DB_URL=${DB_URL}
-						DB_USERNAME=${DB_USERNAME}
-						DB_PASSWORD=${DB_PASSWORD}
-						EOF
-						
-                        chmod 600 ${APP_DIR}/.env
-                        echo "===== .env 생성 완료 ====="
-                    '''
+					sh '''
+	                        echo "===== 배포 디렉터리 생성 ====="
+	                        mkdir -p ${APP_DIR}
+	
+	                        echo "===== .env 생성 ====="
+	                        echo "SPRING_PROFILES_ACTIVE=prod" > ${APP_DIR}/.env
+	                        echo "DB_URL=${DB_URL}" >> ${APP_DIR}/.env
+	                        echo "DB_USERNAME=${DB_USERNAME}" >> ${APP_DIR}/.env
+	                        echo "DB_PASSWORD=${DB_PASSWORD}" >> ${APP_DIR}/.env
+	
+	                        chmod 600 ${APP_DIR}/.env
+	                        echo "===== .env 생성 완료 ====="
+                    	'''
                 }
             }
         }
