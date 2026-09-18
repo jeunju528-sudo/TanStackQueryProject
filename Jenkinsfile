@@ -163,16 +163,17 @@ pipeline {
                 	echo "===== docker-compose.yml 파일 복사 ====="
                     cp docker-compose.yml ${APP_DIR}/
                     
-                    echo "===== 배포 디렉터리 ====="
+                    echo "===== etc/nginx/default.conf 파일 복사 ====="
+                    mkdir -p ${APP_DIR}/nginx
+                    cp etc/nginx/default.conf ${APP_DIR}/nginx/default.conf
+
+                    echo "===== 배포 디렉터리로 이동 ====="
                     cd ${APP_DIR}
 
-                    echo "===== 현재 위치 ====="
-
+                    echo "===== 현재 위치 및 파일 확인 ====="
                     pwd
-
-                    echo "===== 파일 확인 ====="
-
                     ls -al
+                    ls -al nginx/
 
                     echo "===== Docker Image Pull ====="
 
