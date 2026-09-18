@@ -165,7 +165,7 @@ pipeline {
                     
                     echo "===== etc/nginx/default.conf 파일 복사 ====="
                     mkdir -p ${APP_DIR}/nginx
-                    cp etc/nginx/default.conf ${APP_DIR}/nginx/default.conf
+                    cp /etc/nginx/default.conf ${APP_DIR}/nginx/default.conf
 
                     echo "===== 배포 디렉터리로 이동 ====="
                     cd ${APP_DIR}
