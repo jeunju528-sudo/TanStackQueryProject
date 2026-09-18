@@ -93,7 +93,6 @@ pipeline {
     }
 
     post {
-
         success {
             echo 'Rolling deployment completed successfully.'
         }
