@@ -3,7 +3,7 @@ version: "3.8"
 services:
 
   app:
-    image: react-app:latest
+    image: jeunju528/react-app:latest
     restart: always
 
 
