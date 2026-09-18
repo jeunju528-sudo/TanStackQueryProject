@@ -46,8 +46,8 @@ pipeline {
         stage('Gradle Build') {
             steps {
                 sh '''
-                    chmod +x mvnw
-                    ./mvnw clean package -DskipTests
+                    chmod +x gradlew
+                    ./gradlew clean build -x test
                 '''
             }
         }
