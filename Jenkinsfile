@@ -176,11 +176,11 @@ pipeline {
                         echo "======================================"
 
                         cat > ${APP_DIR}/.env <<EOF
-						SPRING_PROFILES_ACTIVE=prod
-						DB_URL=${DB_URL}
-						DB_USERNAME=${DB_USERNAME}
-						DB_PASSWORD=${DB_PASSWORD}
-						EOF
+SPRING_PROFILES_ACTIVE=prod
+DB_URL=${DB_URL}
+DB_USERNAME=${DB_USERNAME}
+DB_PASSWORD=${DB_PASSWORD}
+EOF
 
                         chmod 644 ${APP_DIR}/.env
 
